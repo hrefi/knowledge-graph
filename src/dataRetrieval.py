@@ -2,6 +2,26 @@
 # using BeautifulSoup for web scraping
 # using OpenaI GPT for summarizinggg the important information
 
+# take the required input from the user and pre-process it
+def processInput() -> str:
+   query = str(input("Input (text): "))
+   print(query)
+   return query
+
+
+
+
+
+# """Exact Search"""
+# query = f'"{query}"'
+
+
+
+
+# Preprocess Text - remove irrelevant sections, such as navigation menus or footers, using heuristics or HTML structure analysis
+# Summarize the search information - 128k context window so might not need it - however, it might be helpful if it helps the LLM to be more precise
+
+
 import requests
 from bs4 import BeautifulSoup
 

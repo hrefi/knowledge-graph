@@ -14,6 +14,7 @@ class KnowledgeGraph:
    def __build_knowledge_graph(self, entities, relationships):
       for entity in entities:
          self.add_entity(entity)
+      # Relationships should be in format (src, tgt, relationship)
       for src, tgt, relationship in relationships:
          self.add_relationship(src, tgt, relationship)
       
@@ -34,8 +35,8 @@ class KnowledgeGraphVisualizer:
    def __init__(self, knowledgeGraph: KnowledgeGraph):
       self.knowledgeGraph = knowledgeGraph
 
-   # Aggregate multiple edges between two nodes into a single edge with a combined label
    def aggregate_edge_labels(self, multigraph):
+      """Aggregate multiple edges between two nodes into a single edge with a combined label"""
       simplified_graph = nx.DiGraph()
 
       # For each unique edge, combine labels if there are multiple edges
