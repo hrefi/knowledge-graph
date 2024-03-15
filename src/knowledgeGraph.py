@@ -2,27 +2,21 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 class KnowledgeGraph:
-   def __init__(self, entities, relationships):
-      self.__graph = nx.MultiDiGraph()
+   def __init__(self, relationships):
       # self.__graph = nx.DiGraph()
-      self.__build_knowledge_graph(entities, relationships)
+      self.__graph = nx.MultiDiGraph()
+      # Relationships should have the following fields: 'src', 'tgt', 'relationship'
+      self.__build_knowledge_graph(relationships)
 
    @property
    def graph(self):
       return self.__graph
 
-   def __build_knowledge_graph(self, entities, relationships):
-      for entity in entities:
-         self.add_entity(entity)
-      # Relationships should be in format (src, tgt, relationship)
-      for src, tgt, relationship in relationships:
-         self.add_relationship(src, tgt, relationship)
-      
-      # # Add nodes and edges with relationships as attributes
-      # for src, tgt, relationship in relationships:
-      #    self.add_entity(src)
-      #    self.add_entity(tgt)
-      #    self.add_relationship(src, tgt, relationship=relationship)
+   def __build_knowledge_graph(self, relationships):
+      for rel in relationships:
+         self.add_entity(rel['src'])
+         self.add_entity(rel['tgt'])
+         self.add_relationship(rel['src'], rel['tgt'], rel['relationship'])
 
    def add_entity(self, entity):
       self.__graph.add_node(entity)
