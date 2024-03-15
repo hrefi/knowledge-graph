@@ -9,7 +9,16 @@ def process_input() -> str:
 
 
 def bing_web_search(input: str, exact: bool = True, num_results: int = 7):
-   """Use Bing Web Search API to get the top 10 web results related to the query"""
+   """Perform a web search using Bing Web Search API
+    
+   Parameters:
+      input (str): The search query.
+      exact (bool): Whether to perform an exact search. Defaults to True.
+      num_results (int): Number of search results to return. Defaults to 7.
+   
+   Returns:
+      dict: The search results returned by Bing Web Search API.
+   """
    subscription_key = os.environ['BING_SEARCH_V7_SUBSCRIPTION_KEY']
    endpoint = os.environ['BING_SEARCH_V7_ENDPOINT'] + "/v7.0/search"
 
@@ -31,7 +40,15 @@ def bing_web_search(input: str, exact: bool = True, num_results: int = 7):
 
 
 def bing_entity_search(input: str, exact: bool = True):
-   """Use Bing Entity Search API to get more relevant query information"""
+   """Use Bing Entity Search API to get more relevant query information
+    
+   Parameters:
+      input (str): The search query.
+      exact (bool): Whether to perform an exact search. Defaults to True.
+   
+   Returns:
+      dict: The search results returned by Bing Entity Search API.
+   """
    subscription_key = os.environ['BING_SEARCH_V7_SUBSCRIPTION_KEY']
    endpoint = os.environ['BING_SEARCH_V7_ENDPOINT'] + "/v7.0/entities"
 
@@ -52,28 +69,25 @@ def bing_entity_search(input: str, exact: bool = True):
       # print(search_results)
       raise ex
 
-# using Bing Serach API, Bing Entity Search API, Crunchbase API
-# using BeautifulSoup for web scraping
-# using OpenaI GPT for summarizing the important information
-
-# """Exact Search"""
-# query = f'"{query}"'
-
-# Preprocess Text - remove irrelevant sections, such as navigation menus or footers, using heuristics or HTML structure analysis
-# Summarize the search information - 128k context window so might not need it - however, it might be helpful if it helps the LLM to be more precise
 
 
+# import requests
+# from bs4 import BeautifulSoup
 
-
-import requests
-from bs4 import BeautifulSoup
-
-def extract_text(search_results):
-   all_text = ""
-   for result in search_results:
-      url = result['link']
-      response = requests.get(url)
-      soup = BeautifulSoup(response.content, 'html.parser')
-      text = soup.get_text(strip=True) 
-      all_text += " " + text
-   return all_text
+# def extract_text(search_results):
+#    """Extract text from web page URLs contained in search results.
+   
+#    Parameters:
+#       search_results (list): A list of search result items with 'link' keys.
+   
+#    Returns:
+#       str: Concatenated text from all web pages.
+#    """
+#    all_text = ""
+#    for result in search_results:
+#       url = result['link']
+#       response = requests.get(url)
+#       soup = BeautifulSoup(response.content, 'html.parser')
+#       text = soup.get_text(strip=True) 
+#       all_text += " " + text
+#    return all_text

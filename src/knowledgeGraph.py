@@ -3,9 +3,12 @@ import matplotlib.pyplot as plt
 
 class KnowledgeGraph:
    def __init__(self, relationships):
+      """
+      Parameters:
+         relationships (list of dicts): Each dictionary should contain 'src', 'tgt', and 'relationship' keys.
+      """
       # self.__graph = nx.DiGraph()
       self.__graph = nx.MultiDiGraph()
-      # Relationships should have the following fields: 'src', 'tgt', 'relationship'
       self.__build_knowledge_graph(relationships)
 
    @property
@@ -30,7 +33,11 @@ class KnowledgeGraphVisualizer:
       self.knowledge_graph = knowledge_graph
 
    def aggregate_edge_labels(self, multigraph):
-      """Aggregate multiple edges between two nodes into a single edge with a combined label"""
+      """Aggregate multiple edges between two nodes into a single edge with a combined label.
+      
+      Parameters:
+         multigraph (nx.MultiDiGraph): The graph containing potentially multiple edges between nodes.
+      """
       simplified_graph = nx.DiGraph()
 
       # For each unique edge, combine labels if there are multiple edges
@@ -43,6 +50,21 @@ class KnowledgeGraphVisualizer:
       return simplified_graph
 
    def visualize(self, with_labels=True, node_size=6000, highlight_size=12000, node_color="#9ecae1", highlight_color="#6baed6", edge_color="lightgrey", font_color="#0c1a26", font_size=10, highlight_entities=[], num_nodes=None):
+      """
+      Visualizes the knowledge graph using matplotlib.
+
+      Parameters:
+         with_labels (bool): Whether to draw labels on the nodes.
+         node_size (int): The size of the nodes.
+         highlight_size (int): The size of highlighted nodes.
+         node_color (str): The color of the nodes.
+         highlight_color (str): The color for highlighted nodes.
+         edge_color (str): The color of the edges.
+         font_color (str): The color of the font for node labels.
+         font_size (int): The font size for node labels.
+         highlight_entities (list of str): Nodes to highlight.
+         num_nodes (int or None): If specified, limits the graph to the first num_nodes nodes.
+      """
       # Aggregate edge labels for multigraph
       simplified_graph = self.aggregate_edge_labels(self.knowledge_graph.graph)
       # If 'num_nodes' is specified, visualize a subgraph only with the first 'num_nodes' nodes
@@ -70,31 +92,3 @@ class KnowledgeGraphVisualizer:
       # plt.axis('off')
       plt.show()
 
-
-# If you are going to add a visualization with GraphViz (you need to install the Graphviz software first), 
-# define a (abstract) base class for visualization and then implement separate subclasses for NetworkX and Graphviz visualizers
-
-
-"""Additional Information
-draw_networkx_edge_labels does not support drawign graphs with multiple edges/labels between two nodes.
-
-There are 3 options:
-   1. Simply use `DiGraph` (or `Graph`), but you lose the ability to have multiple relationships between two entities
-   2. Aggregate multiple edges into a single edge with a combined label
-   3. Use a different visualization library, e.g. GraphViz
-
-We have adopted the second approach here, but it's worth checing out other visualization libraries
-"""
-
-"""Future Improvements
-We could add a type to each entity, e.g. "organization", "person", "club", "university", "location", etc.
-
-Additionally, the visualization can be implemented to be dynamic and interactive, e.g. by using D3.js.
-This may allow many improvements, particularly if the UX is designed in a way that can interact/communicate with
-the AI Agent API to provide and update information on the screen.
-The following are suggestions for additional features: 
-   - Users can select a relationship to get more elaborate information about it from the Agent, e.g. ...
-   - Users can select an entity and ask the LLM to generate all of its most relevant relationships and add tem to the graph
-   - Users can seelct which relationships or entities are not relevant and instruct the Agent to remove them from the graph for more clarity
-   - Users can move around nodes of the graph for clarity
-"""
