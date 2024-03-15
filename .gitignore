@@ -159,5 +159,10 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+#######
+
 # Data and Ideas for the report
 report.txt
+
+# Testing file
+src/test.ipynb
