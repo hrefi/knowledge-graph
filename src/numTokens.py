@@ -1,5 +1,7 @@
 # Helper functions to find the length in tokens of a query before calling the OpenAI API
 
+import tiktoken
+
 def numTokensStr(string: str, model: str = "gpt-4"):
    """Calculate the number of tokens in a text string."""
    try:

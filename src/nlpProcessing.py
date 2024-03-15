@@ -41,7 +41,7 @@ def extractRelationshipsFromEntities(query: str, context: list = [], model: str 
    context: expected to contain previous messages in the LLM chat, providing context, such as text related to the query and identified entities from the text
    model: "gpt-3.5-turbo" is the default model, "gpt-4-turbo-preview" is recommended but it's more expensive
    """
-   msgRelationships = f"""Extract the relevant relationships between {query} and the entities you identified above. The relationships should be in the format \"{query} - relationship - identified entity\". The relationship should be maximum 2 words and can be a verb or a noun. Focus on relationships where the entity is a specific person, company, location, university, professional affiliation, etc."""
+   msgRelationships = f"""Extract the relevant relationships between {query} and the entities you identified above. The relationships should be in the format \"{query} - relationship - identified entity\". The relationship should be maximum 2 words and can be a verb or a noun. The relationship should not be a form of the verb 'be', e.g., 'is', 'are', 'was', 'were'. Focus on relationships where the entity is a specific person, company, location, university, professional affiliation, etc."""
 
    messages = context + [{"role": "user", "content": msgRelationships}]
 
@@ -65,7 +65,7 @@ def extractRelationshipsDirectly(query: str, data: str, model: str = "gpt-3.5-tu
    model: "gpt-3.5-turbo" is the default model, "gpt-4-turbo-preview" is recommended but it's more expensive
    """
    # the data is provided at the end of our query
-   msgRelationships = f"""Step 1: Identify all unique specific entities related to {query} that are mentioned in the text below. These entities could include people, companies, locations, universities, professional affiliations, etc. Only include entities mentioned in the text.\n\nStep 2: Extract the relevant relationships between {query} and the entities you have identified. The relationships should be in the format \"{query} - relationship - identified entity\". The relationship should be maximum 2 words and can be a verb or a noun. Focus on relationships where the entity is a specific person, company, location, university, professional affiliation, etc.\n\nOnly output the list of relationships.\n\nText:\n\"\"\"\n{data}\n\"\"\""""
+   msgRelationships = f"""Step 1: Identify all unique specific entities related to {query} that are mentioned in the text below. These entities could include people, companies, locations, universities, professional affiliations, etc. Only include entities mentioned in the text.\n\nStep 2: Extract the relevant relationships between {query} and the entities you have identified. The relationships should be in the format \"{query} - relationship - identified entity\". The relationship should be maximum 2 words and can be a verb or a noun. The relationship should not be a form of the verb 'be', e.g., 'is', 'are', 'was', 'were'. Focus on relationships where the entity is a specific person, company, location, university, professional affiliation, etc.\n\nOnly output the list of relationships.\n\nText:\n\"\"\"\n{data}\n\"\"\""""
 
    messages=[
       {"role": "system", "content": msgSystem},
