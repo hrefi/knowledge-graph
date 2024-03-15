@@ -18,7 +18,7 @@ This project aims to transform unstructured data related to a specific entity, s
    ```sh
    pip install networkx matplotlib requests tiktoken openai
    ```
-3. Set up environment variables (in a .env file) for API keys for OpenAI, Bing, and Crunchbase
+3. Set up environment variables (in a .env file) for API keys for OpenAI, Bing, and Crunchbase.
 
 ### Usage
 
