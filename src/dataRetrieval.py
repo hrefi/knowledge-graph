@@ -1,5 +1,8 @@
+from openai import OpenAI
 import requests
 import os 
+
+client = OpenAI()
 
 # take the input from the user and pre-process it
 def process_input() -> str:
@@ -69,6 +72,30 @@ def bing_entity_search(input: str, exact: bool = True):
       # print(search_results)
       raise ex
 
+
+def generate_additional_data(query: str, model: str = "gpt-3.5-turbo"):
+   """Generate additional data about the query using OpenAI's GPT model.
+
+   Parameters:
+      query (str): The search query.
+      model (str): Model to use, defaults to "gpt-3.5-turbo".
+
+   Returns:
+      str: The generated text.
+   """
+   # Prompt:
+   # Identify important, specific entities related to {query}. These entities could include 
+   # specific people, companies, locations, universities, professional affiliations, etc., 
+   # but not attributes of {query}. Extract the relevant relationships between {query} and the entities you identified. 
+   # If you don't have enough information, return an empty string "".
+   msg_list = f"""Identify important, specific entities related to {query}. These entities could include specific people, companies, locations, universities, professional affiliations, etc., but not attributes of {query}. Extract the relevant relationships between {query} and the entities you identified. If you don't have enough information, return an empty string ""."""
+
+   completion = client.chat.completions.create(
+      model=model,
+      messages=[{"role": "user", "content": msg_list}]
+   )
+
+   return completion.choices[0].message.content
 
 
 # import requests

@@ -19,14 +19,14 @@ def extract_entities(query: str, data: str, model: str = "gpt-3.5-turbo"):
    """
    # Prompt:
    # Identify all unique specific entities related to {query} that are mentioned in the text below. 
-   # These could include people, companies, locations, universities, professional affiliations, etc.
+   # These entities could include people, companies, locations, universities, professional affiliations, etc.
    # Only include entities mentioned in the text.
    # 
    # Text:
    # """
    # {data}
    # """
-   msg_entities = f"""Identify all unique specific entities related to {query} that are mentioned in the text below. These could include people, companies, locations, universities, professional affiliations, etc. Only include entities mentioned in the text.\n\nText:\n\"\"\"\n{data}\n\"\"\""""
+   msg_entities = f"""Identify all unique specific entities related to {query} that are mentioned in the text below. These entities could include people, companies, locations, universities, professional affiliations, etc. Only include entities mentioned in the text.\n\nText:\n\"\"\"\n{data}\n\"\"\""""
    
    messages=[
       {"role": "system", "content": msg_system},
