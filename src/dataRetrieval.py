@@ -4,7 +4,7 @@
 
 # take the required input from the user and pre-process it
 def processInput() -> str:
-   query = str(input("Input (text): "))
+   query = str(input("Input (text): ")).strip()
    print(query)
    return query
 
