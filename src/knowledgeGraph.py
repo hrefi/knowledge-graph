@@ -32,8 +32,8 @@ class KnowledgeGraph:
 
 
 class KnowledgeGraphVisualizer:
-   def __init__(self, knowledgeGraph: KnowledgeGraph):
-      self.knowledgeGraph = knowledgeGraph
+   def __init__(self, knowledge_graph: KnowledgeGraph):
+      self.knowledge_graph = knowledge_graph
 
    def aggregate_edge_labels(self, multigraph):
       """Aggregate multiple edges between two nodes into a single edge with a combined label"""
@@ -50,7 +50,7 @@ class KnowledgeGraphVisualizer:
 
    def visualize(self, with_labels=True, node_size=6000, highlight_size=12000, node_color="#9ecae1", highlight_color="#6baed6", edge_color="lightgrey", font_color="#0c1a26", font_size=10, highlight_entities=[]):
       # Aggregate edge labels for multigraph
-      simplified_graph = self.aggregate_edge_labels(self.knowledgeGraph.graph)
+      simplified_graph = self.aggregate_edge_labels(self.knowledge_graph.graph)
 
       # Highlight any nodes/entities (change color and size) if specified
       color_map = [highlight_color if node in highlight_entities else node_color for node in simplified_graph]
