@@ -42,9 +42,15 @@ class KnowledgeGraphVisualizer:
 
       return simplified_graph
 
-   def visualize(self, with_labels=True, node_size=6000, highlight_size=12000, node_color="#9ecae1", highlight_color="#6baed6", edge_color="lightgrey", font_color="#0c1a26", font_size=10, highlight_entities=[]):
+   def visualize(self, with_labels=True, node_size=6000, highlight_size=12000, node_color="#9ecae1", highlight_color="#6baed6", edge_color="lightgrey", font_color="#0c1a26", font_size=10, highlight_entities=[], num_nodes=None):
       # Aggregate edge labels for multigraph
       simplified_graph = self.aggregate_edge_labels(self.knowledge_graph.graph)
+      # If 'num_nodes' is specified, visualize a subgraph only with the first 'num_nodes' nodes
+      if num_nodes is not None:
+         num_nodes = int(num_nodes)
+         if 1 < num_nodes and num_nodes < simplified_graph.number_of_nodes():
+            nodes = list(simplified_graph.nodes())[:num_nodes]
+            simplified_graph = simplified_graph.subgraph(nodes)
 
       # Highlight any nodes/entities (change color and size) if specified
       color_map = [highlight_color if node in highlight_entities else node_color for node in simplified_graph]
