@@ -1,19 +1,18 @@
 from openai import OpenAI
 import ast
-import json
-import tiktoken
 
 client = OpenAI()
 
 msgSystem = """You extract the most important and relevant entities from a text and find how they are connected."""
 
 
-def extractEntities(query: str, data: str):
+def extractEntities(query: str, data: str, model: str = "gpt-3.5-turbo"):
    """Extract entities relevant to the query from the given data
 
    Parameters:
    query: the entity from the input query
    data: text with information related to the query
+   model: "gpt-3.5-turbo" is the default model, "gpt-4-turbo-preview" is recommended but it's more expensive
    """
    # the data is provided at the end of our query
    msgEntities = f"""Identify all unique specific entities related to {query} that are mentioned in the text below. These could include people, companies, locations, universities, professional affiliations, etc. Only include entities mentioned in the text.\n\nText:\n\"\"\"\n{data}\n\"\"\""""
@@ -24,7 +23,7 @@ def extractEntities(query: str, data: str):
    ]
 
    completion = client.chat.completions.create(
-      model="gpt-4-turbo-preview",
+      model=model,
       messages=messages,
       max_tokens=256,
       temperature=1 # min: 0, max: 2
@@ -34,19 +33,20 @@ def extractEntities(query: str, data: str):
    return messages, completion.choices[0].message
 
 
-def extractRelationshipsFromEntities(query: str, context: list = []):
+def extractRelationshipsFromEntities(query: str, context: list = [], model: str = "gpt-3.5-turbo"):
    """Extract relevant relationships/connections between the query and entities provided in the context
    
    Parameters:
    query: the entity from the input query
    context: expected to contain previous messages in the LLM chat, providing context, such as text related to the query and identified entities from the text
+   model: "gpt-3.5-turbo" is the default model, "gpt-4-turbo-preview" is recommended but it's more expensive
    """
    msgRelationships = f"""Extract the relevant relationships between {query} and the entities you identified above. The relationships should be in the format \"{query} - relationship - identified entity\". The relationship should be maximum 2 words and can be a verb or a noun. Focus on relationships where the entity is a specific person, company, location, university, professional affiliation, etc."""
 
    messages = context + [{"role": "user", "content": msgRelationships}]
 
    completion = client.chat.completions.create(
-      model="gpt-4-turbo-preview",
+      model=model,
       messages=messages,
       max_tokens=256,
       temperature=1
@@ -56,12 +56,13 @@ def extractRelationshipsFromEntities(query: str, context: list = []):
    return messages, completion.choices[0].message
 
 
-def extractRelationshipsDirectly(query: str, data: str):
+def extractRelationshipsDirectly(query: str, data: str, model: str = "gpt-3.5-turbo"):
    """Extract relationships/connections between the query and relevant entities found in the given data
    
    Parameters:
    query: the entity from the input query
    data: text with information related to the query
+   model: "gpt-3.5-turbo" is the default model, "gpt-4-turbo-preview" is recommended but it's more expensive
    """
    # the data is provided at the end of our query
    msgRelationships = f"""Step 1: Identify all unique specific entities related to {query} that are mentioned in the text below. These entities could include people, companies, locations, universities, professional affiliations, etc. Only include entities mentioned in the text.\n\nStep 2: Extract the relevant relationships between {query} and the entities you have identified. The relationships should be in the format \"{query} - relationship - identified entity\". The relationship should be maximum 2 words and can be a verb or a noun. Focus on relationships where the entity is a specific person, company, location, university, professional affiliation, etc.\n\nOnly output the list of relationships.\n\nText:\n\"\"\"\n{data}\n\"\"\""""
@@ -72,7 +73,7 @@ def extractRelationshipsDirectly(query: str, data: str):
    ]
 
    completion = client.chat.completions.create(
-      model="gpt-4-turbo-preview",
+      model=model,
       messages=messages,
       max_tokens=256,
       temperature=1
@@ -83,7 +84,7 @@ def extractRelationshipsDirectly(query: str, data: str):
 
 
 
-def textToDict(data: str, max_tokens: int = 256):
+def textToJson(data: str, max_tokens: int = 1024, model: str = "gpt-3.5-turbo"):
    """Transform the output text returned from the LLM model (i.e. the relationships) into a JSON string
    Note: This function uses an LLM to convert the data into a JSON. Alternatively, a function using regular expressions and string 
    operations can be used, but the input data is a string returned by an LLM, so its structure might not be consistent"""
@@ -96,7 +97,7 @@ def textToDict(data: str, max_tokens: int = 256):
    ]
 
    completion = client.chat.completions.create(
-      model="gpt-4-turbo-preview",
+      model=model,
       messages=messages,
       response_format={"type": "json_object"}, # enable JSON mode - the model is constrained to only generate strings that parse into valid JSON object
       max_tokens=max_tokens
@@ -105,7 +106,7 @@ def textToDict(data: str, max_tokens: int = 256):
    return completion.choices[0].message.content
 
 
-def textToList(data: str, max_tokens: int = 256):
+def textToList(data: str, max_tokens: int = 1024, model: str = "gpt-3.5-turbo"):
    """Transform the output text returned from the LLM model (i.e. the relationships) into a list of tuples corresponding to the relatonships.
    Note: This function uses an LLM to convert the data into a Python list. Alternatively, a function using regular expressions and string 
    operations can be used, but the input data is a string returned by an LLM, so its structure might not be consistent"""
@@ -118,7 +119,7 @@ def textToList(data: str, max_tokens: int = 256):
    ]
 
    completion = client.chat.completions.create(
-      model="gpt-4-turbo-preview",
+      model=model,
       messages=messages,
       max_tokens=max_tokens
    )
