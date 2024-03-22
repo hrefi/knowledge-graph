@@ -87,8 +87,8 @@ def generate_additional_data(query: str, model: str = "gpt-3.5-turbo"):
    # Identify important, specific entities related to {query}.
    # These entities could include specific people, companies, locations, universities, professional affiliations, etc., but not attributes of {query}. 
    # Extract the relevant relationships between {query} and the entities you identified. 
-   # If you don't have enough information, return an empty string "".
-   msg_list = f"""Identify important, specific entities related to {query}. These entities could include specific people, companies, locations, universities, professional affiliations, etc., but not attributes of {query}. Extract the relevant relationships between {query} and the entities you identified.\nIf there isn't sufficiently available information, return an empty string ""."""
+   # You must return an empty response if information isn't available.
+   msg_list = f"""Identify important, specific entities related to {query}. These entities could include specific people, companies, locations, universities, professional affiliations, etc., but not attributes of {query}. Extract the relevant relationships between {query} and the entities you identified.\nYou must return an empty response if information isn't available."""
 
    completion = client.chat.completions.create(
       model=model,
