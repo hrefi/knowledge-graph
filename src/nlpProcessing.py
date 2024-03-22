@@ -5,6 +5,21 @@ client = OpenAI()
 
 msg_system = """You extract the most important and relevant entities from a text and find how they are connected."""
 
+def get_completion(messages, model="gpt-3.5-turbo", max_tokens=256, temperature=1, response_type=None):
+   args = {
+      "model": model,
+      "messages": messages,
+      "max_tokens": max_tokens,
+      "temperature": temperature # min: 0, max: 2
+   }
+
+   if response_type is not None:
+      args["response_type"] = response_type
+
+   completion = client.chat.completions.create(**args)
+
+   return completion.choices[0].message
+
 
 def extract_entities(query: str, data: str, model: str = "gpt-3.5-turbo"):
    """Extract entities relevant to the query from the given data using OpenAI's GPT model.
@@ -33,15 +48,10 @@ def extract_entities(query: str, data: str, model: str = "gpt-3.5-turbo"):
       {"role": "user", "content": msg_entities}
    ]
 
-   completion = client.chat.completions.create(
-      model=model,
-      messages=messages,
-      max_tokens=256,
-      temperature=1 # min: 0, max: 2
-   )
+   completion = get_completion(messages=messages, model=model)
 
    # return the context (previous messages in the chat may be needed for context in the future) and the LLM output
-   return messages, completion.choices[0].message
+   return messages, completion
 
 
 def extract_relationships_from_entities(query: str, context: list = [], model: str = "gpt-3.5-turbo"):
@@ -65,15 +75,10 @@ def extract_relationships_from_entities(query: str, context: list = [], model: s
 
    messages = context + [{"role": "user", "content": msg_relationships}]
 
-   completion = client.chat.completions.create(
-      model=model,
-      messages=messages,
-      max_tokens=256,
-      temperature=1
-   )
+   completion = get_completion(messages=messages, model=model)
 
    # return the context (previous messages) and the LLM output
-   return messages, completion.choices[0].message
+   return messages, completion
 
 
 def extract_relationships_directly(query: str, data: str, model: str = "gpt-3.5-turbo"):
@@ -117,15 +122,10 @@ def extract_relationships_directly(query: str, data: str, model: str = "gpt-3.5-
       {"role": "user", "content": msg_relationships}
    ]
 
-   completion = client.chat.completions.create(
-      model=model,
-      messages=messages,
-      max_tokens=256,
-      temperature=1
-   )
+   completion = get_completion(messages=messages, model=model)
 
    # return the context (previous messages) and the LLM output
-   return messages, completion.choices[0].message
+   return messages, completion
 
 
 
@@ -158,14 +158,15 @@ def text_to_json(data: str, max_tokens: int = 4096, model: str = "gpt-3.5-turbo"
       {"role": "user", "content": msg_list}
    ]
 
-   completion = client.chat.completions.create(
-      model=model,
-      messages=messages,
-      response_format={"type": "json_object"}, # enable JSON mode - the model is constrained to only generate strings that parse into valid JSON object
-      max_tokens=max_tokens
+   # enable JSON mode - the model is constrained to only generate strings that parse into valid JSON object
+   completion = get_completion(
+      messages=messages, 
+      model=model, 
+      max_tokens=max_tokens, 
+      response_format={"type": "json_object"}
    )
 
-   return completion.choices[0].message.content
+   return completion.content
 
 
 def text_to_list(data: str, max_tokens: int = 4096, model: str = "gpt-3.5-turbo"):
@@ -193,14 +194,14 @@ def text_to_list(data: str, max_tokens: int = 4096, model: str = "gpt-3.5-turbo"
       {"role": "user", "content": msg_list}
    ]
 
-   completion = client.chat.completions.create(
-      model=model,
-      messages=messages,
+   completion = get_completion(
+      messages=messages, 
+      model=model, 
       max_tokens=max_tokens
    )
 
    # Parse and clean the LLM output
-   relationships = completion.choices[0].message.content
+   relationships = completion.content
    try:
       # Remove substrings around Python code and parse the output
       relationships = relationships.replace("```python", "").replace("```", "").strip()
@@ -214,28 +215,3 @@ def text_to_list(data: str, max_tokens: int = 4096, model: str = "gpt-3.5-turbo"
    except (ValueError, SyntaxError) as e:
       raise ValueError("Failed to parse LLM output into a Python list.") from e
 
-
-
-# def text_to_json(text: str):
-#    """Transform text returned from the model, i.e. the relationships, into a JSON string using string operations."""
-#    jsonObjects = []
-#    # Split the string into groups based on the comma
-#    groups = text.split(',')
-#    for relationship in groups:
-#       try:
-#          src, rellationship, tgt = map(str.strip, relationship.split('-'))
-#          jsonObjects.append({"source": src, "relation": rellationship, "target": tgt})
-#       except:
-#          print(map(str.strip, relationship.split('-')))
-#          raise Exception('Relationships should have a format "entity 1 - relation - entity 2"')
-# 
-#    return json.dumps(jsonObjects, indent=4)
-
-# def text_to_list(text: str):
-#    """Transform text from the model, i.e. the relationships, into a list of tuples using string operations."""
-#    # Split the string into groups based on the comma
-#    groups = text.split(',')
-#    # Process each group (split by the dash and trim whitespaces) to create triplets
-#    relationships = [tuple(map(str.strip, group.split('-'))) for group in groups]
-# 
-#    return relationships
