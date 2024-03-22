@@ -3,8 +3,6 @@ import ast
 
 client = OpenAI()
 
-msg_system = """You extract the most important and relevant entities from a text and find how they are connected."""
-
 def get_completion(messages, model="gpt-3.5-turbo", max_tokens=256, temperature=1, response_format=None):
    args = {
       "model": model,
@@ -32,6 +30,9 @@ def extract_entities(query: str, data: str, model: str = "gpt-3.5-turbo"):
    Returns:
       tuple: A tuple containing the context (list of messages) and the model's output.
    """
+   # System message
+   msg_system = """You extract the most important and relevant entities from a text and find how they are connected."""
+
    # Constructing the Prompt:
 
    # Identify all unique specific entities related to {query} that are mentioned in the text below. 
@@ -94,6 +95,9 @@ def extract_relationships_directly(query: str, data: str, model: str = "gpt-3.5-
    Returns:
       tuple: A tuple containing the context and the model's output.
    """
+   # System message
+   msg_system = """You extract the most important and relevant entities from a text and find how they are connected."""
+
    # Constructing the Prompt:
 
    # Step 1: Identify all unique specific entities related to {query} that are mentioned in the text below. 
@@ -143,22 +147,20 @@ def text_to_json(data: str, max_tokens: int = 4096, model: str = "gpt-3.5-turbo"
    Returns:
       str: The transformed text as a JSON string.
    """
-   # Constructing the Prompt:
-
-   # Convert the list of relationships below into a JSON object:
-   msg_list = """Convert the list of relationships below into a JSON object:"""
+   # Constructing the System message:
+   msg_system = """You will be provided with a list of relationships. Convert the list of relationships into a JSON object:"""
    # schema:
    # {
    #  "relationships": {"src", "relationship", "tgt"}[]
    # }
-   msg_list += f"""\n\nschema:\n{{\n "relationships": {{\"src\", \"relationship\", \"tgt\"}}[]\n}}"""
-   # """
-   # {data}
-   # """
-   msg_list += f"""\n\n\"\"\"\n{data}\n\"\"\""""
+   msg_system += """\n\nschema:\n{\n "relationships": {\"src\", \"relationship\", \"tgt\"}[]\n}"""
+   msg_system += """\n\nReturn a JSON object."""
+
+   # Prompt
+   msg_list = data
 
    messages=[
-      {"role": "system", "content": "JSON"},
+      {"role": "system", "content": msg_system},
       {"role": "user", "content": msg_list}
    ]
 
@@ -184,18 +186,15 @@ def text_to_list(data: str, max_tokens: int = 4096, model: str = "gpt-3.5-turbo"
    Returns:
       list: The transformed text as a list of tuples.
    """
-   # Constructing the Prompt:
-   
-   # Convert the list of relationships below into a list of tuples. 
-   # Each tuple should have 3 elements of type string. Only output a Python list.
-   msg_list = """Convert the list of relationships below into a list of tuples. Each tuple should have 3 elements of type string. Only output a Python list."""
-   # """
-   # {data}
-   # """
-   msg_list += f"""\n\n\"\"\"\n{data}\n\"\"\""""
+   # Constructing the System message:
+   msg_system = """You will be provided with a list of relationships. Convert the list of relationships into a list of tuples. Each tuple should have 3 elements of type string."""
+   msg_system += """ Only output a Python list."""
+
+   # Prompt
+   msg_list = data
 
    messages=[
-      {"role": "system", "content": """Output a Python list."""},
+      {"role": "system", "content": msg_system},
       {"role": "user", "content": msg_list}
    ]
 
