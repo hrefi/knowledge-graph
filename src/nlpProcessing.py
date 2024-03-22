@@ -5,7 +5,7 @@ client = OpenAI()
 
 msg_system = """You extract the most important and relevant entities from a text and find how they are connected."""
 
-def get_completion(messages, model="gpt-3.5-turbo", max_tokens=256, temperature=1, response_type=None):
+def get_completion(messages, model="gpt-3.5-turbo", max_tokens=256, temperature=1, response_format=None):
    args = {
       "model": model,
       "messages": messages,
@@ -13,8 +13,8 @@ def get_completion(messages, model="gpt-3.5-turbo", max_tokens=256, temperature=
       "temperature": temperature # min: 0, max: 2
    }
 
-   if response_type is not None:
-      args["response_type"] = response_type
+   if response_format is not None:
+      args["response_format"] = response_format
 
    completion = client.chat.completions.create(**args)
 
