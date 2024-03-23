@@ -2,6 +2,13 @@ from openai import OpenAI
 import requests
 import os 
 
+
+# TODO: Future Development
+# - Receive additional input for topic / type of the relationships wanted, # e.g., only show investments, locations, co-workers, etc.
+# - Investigate other search APIs or knowledge bases to diversify results, # e.g., Google Search API, SerpApi, Crunchbase API
+# - Implement web page scraping to get more information and use OpenAI’s text embeddings for searching
+
+
 client = OpenAI()
 
 # take the input from the user and pre-process it

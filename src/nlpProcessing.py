@@ -3,6 +3,11 @@ import ast
 
 client = OpenAI()
 
+
+# TODO: Future Development
+# - Investigate relationships of newly identified entities. 
+
+
 def get_completion(messages, model="gpt-3.5-turbo", max_tokens=256, temperature=1, response_format=None):
    args = {
       "model": model,
