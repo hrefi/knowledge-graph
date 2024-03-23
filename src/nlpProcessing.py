@@ -16,7 +16,7 @@ def get_completion(messages, model="gpt-3.5-turbo", max_tokens=256, temperature=
 
    completion = client.chat.completions.create(**args)
 
-   return completion.choices[0].message
+   return completion.choices[0]
 
 
 def extract_entities(query: str, data: str, model: str = "gpt-3.5-turbo"):
@@ -53,7 +53,7 @@ def extract_entities(query: str, data: str, model: str = "gpt-3.5-turbo"):
    completion = get_completion(messages=messages, model=model)
 
    # return the context (previous messages in the chat may be needed for context in the future) and the LLM output
-   return messages, completion
+   return messages, completion.message
 
 
 def extract_relationships_from_entities(query: str, context: list = [], model: str = "gpt-3.5-turbo"):
@@ -81,7 +81,7 @@ def extract_relationships_from_entities(query: str, context: list = [], model: s
    completion = get_completion(messages=messages, model=model)
 
    # return the context (previous messages) and the LLM output
-   return messages, completion
+   return messages, completion.message
 
 
 def extract_relationships_directly(query: str, data: str, model: str = "gpt-3.5-turbo"):
@@ -132,7 +132,7 @@ def extract_relationships_directly(query: str, data: str, model: str = "gpt-3.5-
    completion = get_completion(messages=messages, model=model)
 
    # return the context (previous messages) and the LLM output
-   return messages, completion
+   return messages, completion.message
 
 
 
@@ -147,6 +147,9 @@ def text_to_json(data: str, max_tokens: int = 4096, model: str = "gpt-3.5-turbo"
    Returns:
       str: The transformed text as a JSON string.
    """
+   def get_first_n_lines(str: str, n: int):
+      return '\n'.join(str.splitlines()[:n])
+   
    # Constructing the System message:
    msg_system = """You will be provided with a list of relationships. Convert the list of relationships into a JSON object:"""
    # schema:
@@ -172,7 +175,22 @@ def text_to_json(data: str, max_tokens: int = 4096, model: str = "gpt-3.5-turbo"
       response_format={"type": "json_object"}
    )
 
-   return completion.content
+   # Check if the model output token limit is exceeded. If so re-run the convertion
+   if completion.finish_reason == "length":
+      # Get the first 20 connections if the output exceeds the model token limit
+      msg_list = get_first_n_lines(data, 20)
+      messages=[
+         {"role": "system", "content": msg_system},
+         {"role": "user", "content": msg_list}
+      ]
+      completion = get_completion(
+         messages=messages, 
+         model=model, 
+         max_tokens=max_tokens, 
+         response_format={"type": "json_object"}
+      )
+
+   return completion.message.content
 
 
 def text_to_list(data: str, max_tokens: int = 4096, model: str = "gpt-3.5-turbo"):
@@ -205,7 +223,7 @@ def text_to_list(data: str, max_tokens: int = 4096, model: str = "gpt-3.5-turbo"
    )
 
    # Parse and clean the LLM output
-   relationships = completion.content
+   relationships = completion.message.content
    try:
       # Remove substrings around Python code and parse the output
       relationships = relationships.replace("```python", "").replace("```", "").strip()
