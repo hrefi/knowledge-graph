@@ -11,13 +11,49 @@ def process_input() -> str:
    return query
 
 
-def bing_web_search(input: str, exact: bool = True, num_results: int = 7):
+def retrieve_data(query: str, num_results: int = 7, model: str = "gpt-3.5-turbo"):
+   """Retrieve information about the query. Uses Bing Web Search, Bing Entity Search, OpenAI GPT model
+    
+   Parameters:
+      query (str): The search query.
+      num_results (int): Number of search results to return. Defaults to 7.
+      model (str): Model to use, defaults to "gpt-3.5-turbo".
+   
+   Returns:
+      str: The information collected."""
+   # Retrieve web resources using Bing and combine the results in a single string
+   bing_entity_search_results = bing_entity_search(query)
+   bing_web_search_results = bing_web_search(query, num_results=num_results)
+   combined_results = []
+
+   # Retrieve entity information if any
+   if "entities" in bing_entity_search_results:
+      for entity in bing_entity_search_results["entities"]["value"]:
+         combined_results.append(str(entity['description']))
+
+   # Retrieve top web search snippets
+   for result in bing_web_search_results["webPages"]["value"]:
+      combined_results.append(str(result['snippet']))
+
+   # Flatten the list into a single string
+   combined_results = '\n\n'.join(combined_results)
+
+   # Generate additional from OpenAI GPT's model if possible
+   additional_generated_data = generate_additional_data(query=query, model=model)
+
+   # Append the additional data
+   combined_results = additional_generated_data + '\n\n' + combined_results
+
+   return combined_results
+
+
+def bing_web_search(query: str, num_results: int, exact: bool = True) -> dict:
    """Perform a web search using Bing Web Search API
     
    Parameters:
-      input (str): The search query.
+      query (str): The search query.
+      num_results (int): Number of search results to return.
       exact (bool): Whether to perform an exact search. Defaults to True.
-      num_results (int): Number of search results to return. Defaults to 7.
    
    Returns:
       dict: The search results returned by Bing Web Search API.
@@ -26,7 +62,7 @@ def bing_web_search(input: str, exact: bool = True, num_results: int = 7):
    endpoint = os.environ['BING_SEARCH_V7_ENDPOINT'] + "/v7.0/search"
 
    # Exact expression search
-   query = f'"{input}"' if exact else input
+   query = f'"{query}"' if exact else query
 
    # Construct a request
    params = { 'q': query, 'mkt': 'en-US', 'count': num_results }
@@ -42,11 +78,11 @@ def bing_web_search(input: str, exact: bool = True, num_results: int = 7):
       raise ex
 
 
-def bing_entity_search(input: str, exact: bool = True):
+def bing_entity_search(query: str, exact: bool = True) -> dict:
    """Use Bing Entity Search API to get more relevant query information
     
    Parameters:
-      input (str): The search query.
+      query (str): The search query.
       exact (bool): Whether to perform an exact search. Defaults to True.
    
    Returns:
@@ -56,7 +92,7 @@ def bing_entity_search(input: str, exact: bool = True):
    endpoint = os.environ['BING_SEARCH_V7_ENDPOINT'] + "/v7.0/entities"
 
    # Exact expression search
-   query = f'"{input}"' if exact else input
+   query = f'"{query}"' if exact else query
 
    # Construct a request
    params = { 'q': query, 'mkt': 'en-US' }
@@ -73,8 +109,8 @@ def bing_entity_search(input: str, exact: bool = True):
       raise ex
 
 
-def generate_additional_data(query: str, model: str = "gpt-3.5-turbo"):
-   """Generate additional data about the query using OpenAI's GPT model.
+def generate_additional_data(query: str, model: str = "gpt-3.5-turbo") -> str:
+   """Generate additional data about the query using OpenAI GPT model.
 
    Parameters:
       query (str): The search query.
@@ -97,24 +133,3 @@ def generate_additional_data(query: str, model: str = "gpt-3.5-turbo"):
 
    return completion.choices[0].message.content
 
-
-# import requests
-# from bs4 import BeautifulSoup
-
-# def extract_text(search_results):
-#    """Extract text from web page URLs contained in search results.
-   
-#    Parameters:
-#       search_results (list): A list of search result items with 'link' keys.
-   
-#    Returns:
-#       str: Concatenated text from all web pages.
-#    """
-#    all_text = ""
-#    for result in search_results:
-#       url = result['link']
-#       response = requests.get(url)
-#       soup = BeautifulSoup(response.content, 'html.parser')
-#       text = soup.get_text(strip=True) 
-#       all_text += " " + text
-#    return all_text
