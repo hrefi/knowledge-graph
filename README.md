@@ -37,4 +37,5 @@ This project aims to transform unstructured data related to a specific entity, s
 - test.ipynb: Script for comparing the execution time of different methods
 
 ## Example Workflow
+
 The agent.ipynb Jupyter Notebook provides an interactive platform to demonstrate the project's capabilities. It demonstrates a step-by-step process from data retrieval to graph visualization and provides useful examples.
