@@ -76,10 +76,10 @@ def extract_relationships_from_entities(query: str, context: list = [], model: s
 
    # Extract the relevant relationships between {query} and the entities you identified above. 
    # The relationships should be in the format "{query} - relationship - identified entity". 
-   # The relationship should be maximum 2 words and can be a verb or a noun. 
-   # The relationship should not be a form of the verb 'be' or 'have'.
+   # The relationships should be maximum 2 words and can be a verb or a noun. 
+   # The relationships should not be a form of the verb 'be' or 'have'.
    # Focus on relationships where the entity is a specific person, company, location, university, professional affiliation, etc., not an attribute to {query}.
-   msg_relationships = f"""Extract the relevant relationships between {query} and the entities you identified above. The relationships should be in the format \"{query} - relationship - identified entity\". The relationship should be maximum 2 words and can be a verb or a noun. The relationship should not be a form of the verb 'be' or 'have'. Focus on relationships where the entity is a specific person, company, location, university, professional affiliation, etc., not an attribute to {query}."""
+   msg_relationships = f"""Extract the relevant relationships between {query} and the entities you identified above. The relationships should be in the format \"{query} - relationship - identified entity\". The relationships should be maximum 2 words and can be a verb or a noun. The relationships should not be a form of the verb 'be' or 'have'. Focus on relationships where the entity is a specific person, company, location, university, professional affiliation, etc., not an attribute to {query}."""
 
    messages = context + [{"role": "user", "content": msg_relationships}]
 
@@ -111,10 +111,10 @@ def extract_relationships_directly(query: str, data: str, model: str = "gpt-3.5-
    msg_relationships = f"""Step 1: Identify all unique specific entities related to {query} that are mentioned in the text below. These entities could include people, companies, locations, universities, professional affiliations, etc. Only include entities mentioned in the text."""
    # Step 2: Extract the relevant relationships between {query} and the entities you have identified. 
    # The relationships should be in the format "{query} - relationship - identified entity". 
-   # The relationship should be maximum 2 words and can be a verb or a noun. 
-   # The relationship should not be a form of the verb 'be' or 'have'. 
+   # The relationships should be maximum 2 words and can be a verb or a noun. 
+   # The relationships should not be a form of the verb 'be' or 'have'. 
    # Focus on relationships where the entity is a specific person, company, location, university, professional affiliation, etc., not an attribute to {query}.
-   msg_relationships += f"""\n\nStep 2: Extract the relevant relationships between {query} and the entities you have identified. The relationships should be in the format \"{query} - relationship - identified entity\". The relationship should be maximum 2 words and can be a verb or a noun. The relationship should not be a form of the verb 'be' or 'have'. Focus on relationships where the entity is a specific person, company, location, university, professional affiliation, etc., not an attribute to {query}."""
+   msg_relationships += f"""\n\nStep 2: Extract the relevant relationships between {query} and the entities you have identified. The relationships should be in the format \"{query} - relationship - identified entity\". The relationships should be maximum 2 words and can be a verb or a noun. The relationships should not be a form of the verb 'be' or 'have'. Focus on relationships where the entity is a specific person, company, location, university, professional affiliation, etc., not an attribute to {query}."""
    # Step 3: Ensure that all relationships follow the rules:
    # 1. The relationships must be in the format "{query} - relationship - identified entity".
    # 2. The relationship must not be a form of the verb 'be', e.g., 'is', 'are', 'was', 'were'.
