@@ -1,8 +1,8 @@
-# Knowledge Graph Agent
+# Knowledge Graph Agent (KGA)
 
 ## Description
 
-This project aims to transform unstructured data related to a specific entity, such as a company or person, into a structured knowledge graph. Given a query like "Elon Musk," the system collects data from various unstructured sources online and then builds a knowledge graph around that entity.
+The Knowledge Graph Agent (KGA) is designed to streamline the transformation of unstructured information into actionable insights by constructing knowledge graphs. By leveraging state-of-the-art LLMs, KGA allows users to discover connections surrounding specific entities, such as companies or individuals.
 
 ## Getting Started
 
